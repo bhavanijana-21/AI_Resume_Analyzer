@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resume Analysis</title>
+
+    <link 
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>   
+<div class="container mt-4">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-primary">
+            📄 Resume Analysis Report
+        </h1>
+        <p class="lead text-muted">
+            AI Powered Resume Evaluation & Career Insights
+        </p>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-lg p-3 text-center border-success border-4"style="height:180px;">
+                <h5>🎯ATS Score</h5>
+                {% if ats_score >= 80 %}
+                {% set circle_color = "#198754" %}
+                {% elif ats_score >= 60 %}
+                {% set circle_color = "#ffc107" %}
+                {% else %}
+                {% set circle_color = "#dc3545" %}
+                {% endif %}
+                <div style="
+                width:140px;
+                height:140px;
+                border-radius:50%;
+                border:10px solid {{ circle_color }};
+                margin:auto;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                font-size:34px;
+                font-weight:bold;
+                color:{{ circle_color }};
+                ">
+                {{ ats_score }}%
+            </div>
+        </div> 
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-lg p-3 text-center border-primary border-4"style="height:180px;">
+            <h5>📊 Job Match</h5>
+            <h2 class="text-primary">
+                {{ match_score }}%
+            </h2>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-lg p-3 text-center border-warning border-4"style="height:180px;">
+            <h5>🛠 Skills Found</h5>
+            <h2 class="text-warning">
+                {{ skills|length }}
+            </h2>
+        </div>
+    </div>
+
+</div>
+
+<!-- Resume Strength Indicator Starts Here -->
+
+{% if ats_score >= 90 %}
+<div class="alert alert-success">
+    ⭐ Excellent Resume
+</div>
+
+{% elif ats_score >= 75 %}
+<div class="alert alert-primary">
+    👍 Good Resume
+</div>
+
+{% else %}
+<div class="alert alert-warning">
+    ⚠ Needs Improvement
+</div>
+{% endif %}
+
+<!-- Resume Strength Indicator Ends Here -->
+<a href="/download-report"
+   class="btn btn-success">
+   Download PDF Report
+</a> 
+
+ 
+
+
+<div class="card shadow p-4 mb-4">
+    <h3>Job Match Score</h3>
+
+    <div class="progress mb-3">
+            <div class="progress-bar
+            {% if match_score >= 80 %}
+                bg-success
+            {% elif match_score >= 60 %}
+                bg-warning
+            {% else %} 
+                bg-danger
+            {% endif %}
+            "
+            role="progressbar"
+            style="width: {{ match_score }}%;">
+                {{ match_score }}%
+            </div> 
+             
+            
+    </div>
+</div>
+
+<div class="card shadow p-4 mb-4 text-center">
+    <h4>Predicted Job Role</h4>
+
+    <h2 class="text-info">
+        {{ role }}
+    </h2>
+</div>
+
+<div class="card shadow-sm p-4 mb-4">
+
+    <h4>✅ Matched Skills</h4>
+
+<ul>
+{% for skill in matched %}
+<span class="badge bg-success fs-6 m-1">
+    {{ skill }}
+</span>    
+{% endfor %}
+</ul>
+<div class="card shadow-sm p-4 mb-4">
+
+    <h4>❌ Missing Skills</h4>
+
+<ul>
+{% for skill in missing %}
+<span class="badge bg-danger fs-6 m-1">
+    {{ skill }}
+</span>    
+{% endfor %}
+</ul>
+
+
+<div class="card shadow-sm p-4 mb-4">
+
+<h4>🛠 Detected Skills</h4>
+{% for skill in skills %}
+<span class="badge bg-success fs-6 m-1">
+    {{ skill }}
+</span>
+{% endfor %}
+
+<h3>Resume Suggestions</h3>
+{% for item in suggestions %}
+<div class="alert alert-warning">
+    {{ item }}
+</div>
+{% endfor %}
+<div class="card shadow p-4 mb-4">
+    <h3>🎤Interview Questions</h3>
+
+    <ol>
+        {% for q in questions %}
+            <li>{{ q }}</li>
+        {% endfor %}
+    </ol>
+</div>
+<div class="card shadow p-4 mb-4">
+    <h3>Recommended Skills to Learn</h3>
+
+    <div class="mt-3">
+        {% for skill in missing %}
+            <span class="badge bg-primary fs-6 me-2 mb-2 p-2">
+                {{ skill }}
+            </span>
+        {% endfor %}
+    </div>
+</div>
+<div class="card shadow p-4 mb-4">
+
+    <h3>Skill Gap Analysis</h3>
+
+    <div class="row text-center mt-4">
+
+        <div class="col-md-3">
+            <h5>Required Skills</h5>
+            <h2 class="text-primary">
+                {{ matched|length + missing|length }}
+            </h2>
+        </div>
+
+        <div class="col-md-3">
+            <h5>Matched Skills</h5>
+            <h2 class="text-success">
+                {{ matched|length }}
+            </h2>
+        </div>
+
+        <div class="col-md-3">
+            <h5>Missing Skills</h5>
+            <h2 class="text-danger">
+                {{ missing|length }}
+            </h2>
+        </div>
+
+        <div class="col-md-3">
+            <h5>Readiness</h5>
+            <h2 class="text-info">
+                {{ readiness }}%
+            </h2>
+        </div>
+
+    </div>
+
+    <div class="progress mt-3">
+        <div class="progress-bar bg-info"
+             style="width: {{ readiness }}%">
+            {{ readiness }}%
+        </div>
+    </div>
+
+</div>
+<div class="card shadow p-4 mb-4">
+
+    <h3 class="text-center">
+        Overall Hiring Probability
+    </h3>
+
+    <div class="row text-center mt-4">
+
+        <div class="col-md-3">
+            <h5>ATS</h5>
+            <h2 class="text-success">
+                {{ ats_score }}%
+            </h2>
+        </div>
+
+        <div class="col-md-3">
+            <h5>Job Match</h5>
+            <h2 class="text-primary">
+                {{ match_score }}%
+            </h2>
+        </div>
+
+        <div class="col-md-3">
+            <h5>Readiness</h5>
+            <h2 class="text-info">
+                {{ readiness }}%
+            </h2>
+        </div>
+
+        <div class="col-md-3">
+            <h5>Overall</h5>
+            <h2 class="text-warning">
+                {{ overall_score }}%
+            </h2>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="card shadow p-4 mb-4 text-center">
+    <h3>Resume Strength</h3>
+
+    {% if strength == "Strong Candidate" %}
+        <h2 class="text-success">{{ strength }}</h2>
+
+    {% elif strength == "Average Candidate" %}
+        <h2 class="text-warning">{{ strength }}</h2>
+
+    {% else %}
+        <h2 class="text-danger">{{ strength }}</h2>
+
+    {% endif %}
+</div>
+
+<div class="card shadow p-4 mb-4">
+    <h3 class="text-center mb-4">🏢 Company Readiness</h3>
+    <p class="text-center text-muted">
+        Estimated compatibility with hiring requirements
+    </p>
+
+    <p>TCS - {{ tcs_score }}%</p>
+    <div class="progress mb-3">
+        <div class="progress-bar bg-success"
+             style="width: {{ tcs_score }}%">
+            {{ tcs_score }}%
+        </div>
+    </div>
+
+    <p>Infosys - {{ infosys_score }}%</p>
+    <div class="progress mb-3">
+        <div class="progress-bar bg-primary"
+             style="width: {{ infosys_score }}%">
+            {{ infosys_score }}%
+        </div>
+    </div>
+
+    <p>Wipro - {{ wipro_score }}%</p>
+    <div class="progress mb-3">
+        <div class="progress-bar bg-info"
+             style="width: {{ wipro_score }}%">
+            {{ wipro_score }}%
+        </div>
+    </div>
+
+    <p>Accenture - {{ accenture_score }}%</p>
+    <div class="progress mb-3">
+        <div class="progress-bar bg-warning"
+             style="width: {{ accenture_score }}%">
+            {{ accenture_score }}%
+        </div>
+    </div>
+
+    <p>Capgemini - {{ capgemini_score }}%</p>
+    <div class="progress">
+        <div class="progress-bar bg-danger"
+             style="width: {{ capgemini_score }}%">
+            {{ capgemini_score }}%
+        </div>
+    </div>
+</div>
+
+<div class="card shadow p-4 mb-4">
+    <h3 class="text-center mb-4">
+        📈 Skills Analytics
+    </h3>
+
+    <div style="width:400px; margin:auto;">
+        <canvas id="skillsChart"></canvas>
+    </div>
+</div>
+
+<div class="card shadow p-4 mb-4">
+    <h3 class="text-center mb-4">
+       🚀 Learning Roadmap
+    </h3>
+
+    <ul class="list-group">
+        {% for step in roadmap %}
+        <li class="list-group-item">
+            {{ step }}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="card shadow-sm p-4 mb-4">
+    <h4>📄 Resume Preview</h4>
+
+    <div style="max-height:250px;overflow-y:auto;">
+        <pre>
+{{ resume_text[:1000] }}
+        </pre>
+    </div>
+</div>
+
+</div>
+<script>
+const matched = {{ matched|length }};
+const missing = {{ missing|length }};
+const ctx = document.getElementById('skillsChart');
+
+new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: [
+            `Matched Skills (${matched})`,
+            `Missing Skills (${missing})`
+        ],
+        datasets: [{
+            data: [matched, missing],
+            backgroundColor: [
+                '#198754',
+                '#dc3545'
+            ]
+        }]
+    }
+});
+</script>
+<footer class="text-center mt-5 py-4">
+
+
+<p>
+© 2026 AI Resume Analyzer
+</p>
+
+<small class="text-muted">
+Built with Flask • Python • Bootstrap • Chart.js
+</small>
+
+</footer>
+</body>
+</html>
