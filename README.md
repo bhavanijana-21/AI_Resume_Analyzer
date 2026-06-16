@@ -36,7 +36,17 @@ python app.py
 
 ## Screenshots
 
-(Add screenshots here after uploading to GitHub)
+### Home Page
+![Home](screenshots/home.png)
+
+### Analysis Report
+![Report](screenshots/report.png)
+
+### Skills Analysis
+![Skills](screenshots/skills.png)
+
+### Learning Roadmap
+![Roadmap](screenshots/roadmap.png)
 
 ## Author
 
